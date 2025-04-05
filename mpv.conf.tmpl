@@ -1,14 +1,5 @@
 include="~~/profiles.conf"
 
-###########
-# GPU API #
-###########
-# Controls which type of graphics APIs will be accepted, switch to "d3d11" (on Windows) or "opengl" if you have issues
-# Uncomment one API only
-
-###### Vulkan Linux, Windows (preferred)
-gpu-api=vulkan
-
 ##########
 # Player #
 ##########
@@ -97,10 +88,16 @@ slang=vn,eng,en,und,de,ger,jp,jap 			# Subtitle language priority
 # Video Profiles #
 ##################
 
-hwdec=auto-safe
 vo=gpu-next
-gpu-api=auto
+gpu-api=vulkan
+{{- if ne .chezmoi.os "darwin" }}
+hwdec=auto-safe
 gpu-context=auto
+{{- else }}
+gpu-context=macvk
+hwdec=videotoolbox
+macos-render-timer=precise 
+{{- end }}
 
 ###### Dither
 dither-depth=auto
