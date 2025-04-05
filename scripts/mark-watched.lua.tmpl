@@ -1,0 +1,24 @@
+local msg = require 'mp.msg'
+
+local function ytdlWatch()
+    local path = mp.get_property("path", "")
+    {{- $profileDir := '0' }}
+    {{- if eq .browser "ZEN" }}
+    {{- $profileDir = joinPath .chezmoi.homeDir "/.config/zen/profiles/personal" }}
+    {{- else }}
+    {{- $profileDir = joinPath .chezmoi.homeDir "/.config/firefox/profiles/personal" }}
+    {{- end }}
+    local ffpath = "firefox:{{ $profileDir }}"
+    local command = { "{{ .chezmoi.homeDir }}/.local/bin/yt-dlp", "--cookies-from-browser", ffpath, "--mark-watched", "-vU", "--simulate", path }
+    local ret = mp.command_native({
+        name = "subprocess",
+        args = command,
+        capture_stdout = true,
+        capture_stderr = true
+    })
+    msg.info(ret.stdout)
+    msg.info(ret.stderr)
+end
+
+-- mp.register_event("start-file", ytdlWatch)
+mp.register_event("file-loaded", ytdlWatch)
